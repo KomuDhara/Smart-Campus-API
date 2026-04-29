@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Campus API</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; background: #f5f5f5; }
+        h1 { color: #2c3e50; }
+        h2 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        .base-url { background: #2c3e50; color: #1abc9c; padding: 12px 16px; border-radius: 6px; font-family: monospace; font-size: 1.1em; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        th { background: #3498db; color: white; padding: 10px 14px; text-align: left; }
+        td { padding: 9px 14px; border-bottom: 1px solid #eee; font-family: monospace; font-size: 0.9em; }
+        tr:last-child td { border-bottom: none; }
+        .method { font-weight: bold; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; }
+        .get    { background: #27ae60; }
+        .post   { background: #2980b9; }
+        .put    { background: #e67e22; }
+        .delete { background: #e74c3c; }
+        .note { background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px 14px; margin-top: 20px; border-radius: 0 6px 6px 0; }
+    </style>
+</head>
+<body>
+    <h1>🏫 Smart Campus Sensor &amp; Room Management API</h1>
+    <p>Apache Tomcat 9 &nbsp;|&nbsp; Jersey 2.x (JAX-RS 2.1) &nbsp;|&nbsp; Java 11</p>
+
+    <h2>Base URL</h2>
+    <div class="base-url">http://localhost:8080/smartcampus-api/api/v1</div>
+
+    <h2>Endpoints</h2>
+    <table>
+        <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+        <tr><td><span class="method get">GET</span></td>    <td>/api/v1</td>                                   <td>Discovery / API info</td></tr>
+        <tr><td><span class="method get">GET</span></td>    <td>/api/v1/rooms</td>                             <td>List all rooms</td></tr>
+        <tr><td><span class="method post">POST</span></td>  <td>/api/v1/rooms</td>                             <td>Create a room</td></tr>
+        <tr><td><span class="method get">GET</span></td>    <td>/api/v1/rooms/{roomId}</td>                    <td>Get a specific room</td></tr>
+        <tr><td><span class="method put">PUT</span></td>    <td>/api/v1/rooms/{roomId}</td>                    <td>Update a room</td></tr>
+        <tr><td><span class="method delete">DELETE</span></td><td>/api/v1/rooms/{roomId}</td>                  <td>Delete a room (409 if sensors assigned)</td></tr>
+        <tr><td><span class="method get">GET</span></td>    <td>/api/v1/sensors</td>                           <td>List sensors (optional ?type=CO2)</td></tr>
+        <tr><td><span class="method post">POST</span></td>  <td>/api/v1/sensors</td>                           <td>Register a sensor</td></tr>
+        <tr><td><span class="method get">GET</span></td>    <td>/api/v1/sensors/{sensorId}</td>                <td>Get a specific sensor</td></tr>
+        <tr><td><span class="method put">PUT</span></td>    <td>/api/v1/sensors/{sensorId}</td>                <td>Update a sensor</td></tr>
+        <tr><td><span class="method delete">DELETE</span></td><td>/api/v1/sensors/{sensorId}</td>              <td>Delete a sensor</td></tr>
+        <tr><td><span class="method get">GET</span></td>    <td>/api/v1/sensors/{sensorId}/readings</td>       <td>List all readings for sensor</td></tr>
+        <tr><td><span class="method post">POST</span></td>  <td>/api/v1/sensors/{sensorId}/readings</td>       <td>Add a reading (403 if MAINTENANCE)</td></tr>
+        <tr><td><span class="method get">GET</span></td>    <td>/api/v1/sensors/{sensorId}/readings/{id}</td>  <td>Get a specific reading</td></tr>
+    </table>
+
+    <div class="note">
+        ℹ️ <strong>Quick test:</strong> Open
+        <a href="api/v1">api/v1</a> to verify the API is running.
+    </div>
+</body>
+</html>
