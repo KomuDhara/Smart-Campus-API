@@ -1,0 +1,1220 @@
+{
+  "info": {
+    "name": "SmartCampus API",
+    "description": "REST API for managing campus rooms and IoT sensors \u2014 built with JAX-RS (Jersey 2.x) on Apache Tomcat 9.\n\n\u26a0\ufe0f Data is stored IN-MEMORY \u2014 resets on every Tomcat restart.\n\n\u2705 Always follow this order:\n1. POST room\n2. POST sensor\n3. POST reading",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "smartcampus-api-v1"
+  },
+  "item": [
+    {
+      "name": "DISCOVERY",
+      "item": [
+        {
+          "name": "GET Discovery",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                ""
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Returns API metadata and available resource links (HATEOAS).\nExpected: 200 OK"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ROOMS",
+      "item": [
+        {
+          "name": "POST Create Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"R1\",\n  \"name\": \"Lecture Hall A\",\n  \"capacity\": 100\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/rooms",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "rooms"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Create a new room. ID must be unique.\nExpected: 201 Created"
+          },
+          "response": []
+        },
+        {
+          "name": "GET All Rooms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/rooms",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "rooms"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Returns all rooms.\nExpected: 200 OK"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Room by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/rooms/R1",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "rooms",
+                "R1"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Returns a single room by ID.\nExpected: 200 OK"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Update Room",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Lecture Hall A (Updated)\",\n  \"capacity\": 120\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/rooms/R1",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "rooms",
+                "R1"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Update room name and/or capacity.\nExpected: 200 OK"
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Room (no sensors) \u2705",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/rooms/R1",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "rooms",
+                "R1"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Delete a room. Only works if no sensors are assigned.\nExpected: 204 No Content"
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Room with Sensors \u274c (409)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/rooms/R1",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "rooms",
+                "R1"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Attempt to delete a room that still has sensors assigned.\nExpected: 409 Conflict"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "SENSORS",
+      "item": [
+        {
+          "name": "POST Create Sensor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"S1\",\n  \"type\": \"temperature\",\n  \"status\": \"ACTIVE\",\n  \"currentValue\": 0.0,\n  \"roomId\": \"R1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Register a new sensor. roomId must reference an existing room.\nExpected: 201 Created"
+          },
+          "response": []
+        },
+        {
+          "name": "GET All Sensors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Returns all sensors.\nExpected: 200 OK"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Sensors by Type (filter)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors?type=temperature",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "temperature"
+                }
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Filter sensors by type (e.g. temperature, CO2, humidity).\nExpected: 200 OK with filtered list"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Sensor by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/S1",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "S1"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Returns a single sensor by ID.\nExpected: 200 OK"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Update Sensor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"humidity\",\n  \"status\": \"ACTIVE\",\n  \"currentValue\": 55.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/S1",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "S1"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Update sensor type, status, or currentValue.\nExpected: 200 OK"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Set Sensor to MAINTENANCE",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"MAINTENANCE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/S1",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "S1"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Set sensor status to MAINTENANCE. Any POST reading after this \u2192 403.\nExpected: 200 OK"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Sensor with Bad roomId \u274c (422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"S_BAD\",\n  \"type\": \"temperature\",\n  \"status\": \"ACTIVE\",\n  \"currentValue\": 0.0,\n  \"roomId\": \"DOES_NOT_EXIST\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Attempt to register a sensor referencing a non-existent room.\nExpected: 422 Unprocessable Entity"
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Sensor",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/S1",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "S1"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Remove a sensor and unlink it from its room.\nExpected: 204 No Content"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "READINGS",
+      "item": [
+        {
+          "name": "POST Add Reading",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": 23.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/S1/readings",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "S1",
+                "readings"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Append a new reading to sensor S1. Also updates sensor.currentValue.\nExpected: 201 Created"
+          },
+          "response": []
+        },
+        {
+          "name": "GET All Readings for Sensor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/S1/readings",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "S1",
+                "readings"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Fetch all historical readings for sensor S1.\nExpected: 200 OK"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Reading by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/S1/readings/REPLACE_WITH_READING_ID",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "S1",
+                "readings",
+                "REPLACE_WITH_READING_ID"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Fetch a specific reading by its UUID. Replace REPLACE_WITH_READING_ID with the id from POST response.\nExpected: 200 OK"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Reading on MAINTENANCE Sensor \u274c (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": 99.9\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/S1/readings",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "S1",
+                "readings"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Post a reading to a sensor with MAINTENANCE status.\nFirst: PUT /sensors/S1 with status=MAINTENANCE\nExpected: 403 Forbidden"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Reading on Unknown Sensor \u274c (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": 10.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/GHOST_SENSOR/readings",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "GHOST_SENSOR",
+                "readings"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Post a reading to a sensor that does not exist.\nExpected: 404 Not Found"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ERROR CASES",
+      "item": [
+        {
+          "name": "404 - Room Not Found",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/rooms/NONEXISTENT",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "rooms",
+                "NONEXISTENT"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 404 Not Found"
+          },
+          "response": []
+        },
+        {
+          "name": "404 - Sensor Not Found",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/NONEXISTENT",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "NONEXISTENT"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 404 Not Found"
+          },
+          "response": []
+        },
+        {
+          "name": "409 - Delete Room with Sensors",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/rooms/R1",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "rooms",
+                "R1"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Try deleting R1 while S1 is still assigned to it.\nExpected: 409 Conflict"
+          },
+          "response": []
+        },
+        {
+          "name": "422 - Sensor with Invalid roomId",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"S99\",\n  \"type\": \"CO2\",\n  \"status\": \"ACTIVE\",\n  \"currentValue\": 0.0,\n  \"roomId\": \"BADROOM\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 422 Unprocessable Entity"
+          },
+          "response": []
+        },
+        {
+          "name": "403 - Reading on MAINTENANCE Sensor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": 42.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/S3/readings",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "S3",
+                "readings"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "S3 must exist with status=MAINTENANCE.\nExpected: 403 Forbidden"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "RECOMMENDED TESTING ORDER \u2b50",
+      "item": [
+        {
+          "name": "1. GET Discovery",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                ""
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 200 discovery"
+          },
+          "response": []
+        },
+        {
+          "name": "2. POST Room (R1)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"R1\",\n  \"name\": \"Lecture Hall A\",\n  \"capacity\": 100\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/rooms",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "rooms"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 201 created"
+          },
+          "response": []
+        },
+        {
+          "name": "3. GET All Rooms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/rooms",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "rooms"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 200 list"
+          },
+          "response": []
+        },
+        {
+          "name": "4. GET Room by ID (R1)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/rooms/R1",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "rooms",
+                "R1"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 200 by id"
+          },
+          "response": []
+        },
+        {
+          "name": "5. POST Sensor (S1 \u2192 R1)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"S1\",\n  \"type\": \"temperature\",\n  \"status\": \"ACTIVE\",\n  \"currentValue\": 0.0,\n  \"roomId\": \"R1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 201 created"
+          },
+          "response": []
+        },
+        {
+          "name": "6. GET All Sensors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 200 list"
+          },
+          "response": []
+        },
+        {
+          "name": "7. GET Sensors by Type (?type=temperature)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors?type=temperature",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "temperature"
+                }
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 200 filtered"
+          },
+          "response": []
+        },
+        {
+          "name": "8. POST Reading (S1)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": 23.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/S1/readings",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "S1",
+                "readings"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 201 saved"
+          },
+          "response": []
+        },
+        {
+          "name": "9. GET Readings (S1)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/S1/readings",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "S1",
+                "readings"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 200 list"
+          },
+          "response": []
+        },
+        {
+          "name": "10. POST Sensor bad roomId \u274c (422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"S_BAD\",\n  \"type\": \"CO2\",\n  \"status\": \"ACTIVE\",\n  \"currentValue\": 0.0,\n  \"roomId\": \"BADROOM\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 422"
+          },
+          "response": []
+        },
+        {
+          "name": "11. POST Sensor MAINTENANCE (S3 \u2192 R1)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"S3\",\n  \"type\": \"CO2\",\n  \"status\": \"MAINTENANCE\",\n  \"currentValue\": 0.0,\n  \"roomId\": \"R1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 201 created (with MAINTENANCE status)"
+          },
+          "response": []
+        },
+        {
+          "name": "12. POST Reading on MAINTENANCE Sensor \u274c (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": 500.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/sensors/S3/readings",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "sensors",
+                "S3",
+                "readings"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 403 Forbidden"
+          },
+          "response": []
+        },
+        {
+          "name": "13. DELETE Room with Sensors \u274c (409)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/rooms/R1",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "rooms",
+                "R1"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 409 Conflict \u2014 R1 still has S1 and S3 assigned"
+          },
+          "response": []
+        },
+        {
+          "name": "14. GET Room Not Found \u274c (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Smart-Campus-API/api/v1/rooms/GHOST",
+              "host": [
+                "localhost"
+              ],
+              "path": [
+                "Smart-Campus-API",
+                "api",
+                "v1",
+                "rooms",
+                "GHOST"
+              ],
+              "protocol": "http",
+              "port": "8080"
+            },
+            "description": "Expected: 404 Not Found"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
